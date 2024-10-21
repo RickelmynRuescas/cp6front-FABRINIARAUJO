@@ -1,0 +1,163 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+
+// Variáveis SASS
+$font-family: 'Roboto', sans-serif;
+$white-color: #fff;
+$border-size: 0.2rem;
+$button-width: 15rem;
+$button-padding: 1.5rem;
+$hover-width: 75%;
+$other-width: 25%;
+$speed: 1000ms;
+
+$split-colors: (
+  left: rgba(87, 84, 236, 0.7),
+  right: rgba(43, 43, 43, 0.8)
+);
+
+$hover-colors: (
+  left: rgba(87, 84, 236, 1),
+  right: rgba(28, 122, 28, 1)
+);
+
+$split-backgrounds: (
+  left: 'ps.jpg',
+  right: 'xbox.jpg'
+);
+
+// Mixin para o botão hover
+@mixin button-hover($side) {
+  background-color: map-get($hover-colors, $side);
+  border-color: map-get($hover-colors, $side);
+}
+
+// Global styles
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: $font-family;
+  height: 100vh;
+  overflow: hidden;
+  margin: 0;
+}
+
+h1 {
+  font-size: 4rem;
+  color: $white-color;
+  position: absolute;
+  left: 50%;
+  top: 20%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  z-index: 2; // Mantém o h1 acima dos outros elementos
+}
+
+// Estilo do botão
+.btn {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  left: 50%;
+  top: 40%;
+  transform: translateX(-50%);
+  text-decoration: none;
+  color: $white-color;
+  border: $white-color solid $border-size;
+  font-size: 1rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  width: $button-width;
+  padding: $button-padding;
+  z-index: 2; // Garante que o botão fique acima do background
+}
+
+// Estilos para o split
+.container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: #333;
+}
+
+.split {
+  position: absolute;
+  width: 50%;
+  height: 100%;
+  overflow: hidden;
+  transition: width $speed ease-in-out; // Transição aplicada à largura para suavidade
+
+  // Estabelece os lados corretamente
+  &.left {
+    left: 0;
+  }
+
+  &.right {
+    right: 0;
+  }
+
+  // Iteração sobre o mapa de cores ($split-colors) para gerar as classes
+  // dinâmicas '.left' e '.right' e aplicar estilos específicos para cada lado:
+  // - Define imagem de fundo e cor para cada lado usando mapas ($split-backgrounds e $split-colors)
+  // - Adiciona uma camada de cor sobre a imagem com o pseudoelemento ::before
+  // - Aplica transições suaves para as alterações de cor
+  // - Define o comportamento de hover do botão em cada lado com o mixin 'button-hover'
+  @each $side, $bg-color in $split-colors {
+    &.#{$side} {
+      background: url('imgs/' + map-get($split-backgrounds, $side)) no-repeat center;
+      background-size: cover;
+
+      &::before {
+        content: '';
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background-color: $bg-color;
+        transition: background-color $speed ease-in-out;
+      }
+
+      // Aplica o hover correto para o botão em cada lado
+      &:hover .btn {
+        @include button-hover($side);
+      }
+    }
+  }
+}
+
+// Animações de hover
+.container:hover .split {
+  transition: width $speed ease-in-out; // Aplica transição suave na largura
+}
+
+.hover-left {
+  .left {
+    width: $hover-width;
+  }
+  .right {
+    width: $other-width;
+  }
+}
+
+.hover-right {
+  .right {
+    width: $hover-width;
+  }
+  .left {
+    width: $other-width;
+  }
+}
+
+// Responsividade
+@media (max-width: 800px) {
+  h1 {
+    font-size: 2rem;
+    top: 30%;
+  }
+
+  .btn {
+    padding: 1.2rem;
+    width: 12rem;
+  }
+}
